@@ -1,1 +1,1 @@
-# simpro-dev-talk-060625-
+# simpro-dev-talk-060625
