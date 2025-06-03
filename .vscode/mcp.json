@@ -1,0 +1,11 @@
+{
+    "servers": {
+        "simbro": {
+            "type": "stdio",
+            "command": "node",
+            "args": [
+                "/Users/VincentLi/Desktop/simbro-mcp-server/dist/main.js"
+            ]
+        }
+    }
+}

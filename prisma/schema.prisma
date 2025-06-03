@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Technician {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String
+  skills    String[]
+  status    TechnicianStatus @default(AVAILABLE)
+  lat       Float?
+  lng       Float?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  jobs        Job[]
+  timeEntries TimeEntry[]
+  assets      Asset[]
+
+  @@map("technicians")
+}
+
+model Job {
+  id                 String    @id @default(cuid())
+  title              String
+  description        String
+  customerName       String
+  customerAddress    String
+  customerPhone      String
+  assignedTechnician String
+  scheduledStart     DateTime
+  scheduledEnd       DateTime
+  actualStart        DateTime?
+  actualEnd          DateTime?
+  status             JobStatus @default(SCHEDULED)
+  priority           Priority  @default(MEDIUM)
+  workNotes          String?
+  photos             String[]
+  customerSignature String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  technician  Technician  @relation(fields: [assignedTechnician], references: [id])
+  timeEntries TimeEntry[]
+  assetUsages AssetUsage[]
+
+  @@map("jobs")
+}
+
+model Asset {
+  id              String        @id @default(cuid())
+  name            String
+  type            AssetType
+  description     String
+  quantity        Int
+  location        String
+  assignedTo      String?
+  condition       AssetCondition @default(GOOD)
+  lastMaintenance DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  technician  Technician?  @relation(fields: [assignedTo], references: [id])
+  assetUsages AssetUsage[]
+
+  @@map("assets")
+}
+
+model TimeEntry {
+  id           String    @id @default(cuid())
+  technicianId String
+  jobId        String
+  startTime    DateTime
+  endTime      DateTime?
+  breakMinutes Int?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  technician Technician @relation(fields: [technicianId], references: [id])
+  job        Job        @relation(fields: [jobId], references: [id])
+
+  @@map("time_entries")
+}
+
+model AssetUsage {
+  id      String @id @default(cuid())
+  jobId   String
+  assetId String
+  quantityUsed Int @default(1)
+  createdAt DateTime @default(now())
+
+  // Relations
+  job   Job   @relation(fields: [jobId], references: [id])
+  asset Asset @relation(fields: [assetId], references: [id])
+
+  @@unique([jobId, assetId])
+  @@map("asset_usages")
+}
+
+enum TechnicianStatus {
+  AVAILABLE
+  BUSY
+  OFFLINE
+}
+
+enum JobStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum AssetType {
+  TOOL
+  EQUIPMENT
+  PART
+  MATERIAL
+}
+
+enum AssetCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+}
