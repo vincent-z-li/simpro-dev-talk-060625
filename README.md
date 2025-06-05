@@ -23,16 +23,16 @@ npm run mcp:inspect
 ```
 - MCP inspector available at: `http://127.0.0.1:6274`
 - Click "Connect", and can test all the tool works as expected without connecting to local agent.
-- To connect this MCP with your local agent, similar to this [Guide](https://www.notion.so/Update-Jira-Confluence-with-Copilot-agent-mode-by-connecting-their-MCP-2026aa72858e805391accb123ff90009?source=copy_link)
+- To connect this MCP with your local agent, follow [vscode official guide](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), or similar [my guide](https://www.notion.so/Update-Jira-Confluence-with-Copilot-agent-mode-by-connecting-their-MCP-2026aa72858e805391accb123ff90009?source=copy_link)
+  - **Note**: in `.vscode/mcp.json`, u need to target your args to your local project main.js
 
 ### RESTful API Server 
 For traditional REST API usage:
 ```bash
-npm run start:api        # Production mode
-npm run start:api:dev    # Development mode with hot reload
+npm start
 ```
-- API available at: `http://localhost:3000`
-- Swagger documentation at: `http://localhost:3000/api`
+- API available at: `http://localhost:3000/api`
+- Swagger documentation at: `http://localhost:3000/api/docs`
 
 ## Available MCP Tools
 
