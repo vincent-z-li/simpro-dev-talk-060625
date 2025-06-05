@@ -1,40 +1,49 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
-/**
- * Thank you Claude 4.0 for helping me solve 
- * this stupid encoding issue on binary mode for proper buffer handling.
- * See all the nice comments in the code below. Really appreciate it brilliant Claude 4.0!
- */
+
 async function bootstrap() {
-  // Completely silence console output on stdout to avoid breaking MCP stdio protocol
-  // Redirect all logging to stderr for debugging
-  const originalConsoleLog = console.log;
-  const originalConsoleInfo = console.info;
-  const originalConsoleWarn = console.warn;
-  
-  console.log = console.info = console.warn = function(...args) {
-    process.stderr.write(`[LOG] ${args.join(' ')}\n`);
-  };
-  
-  // Only create the app with minimal logging
-  const app = await NestFactory.create(AppModule, {
-    logger: false, // Disable all Nest logging
-  });
-  
-  // Initialize app without starting the HTTP server
-  await app.init();
-  
-  // Keep the process alive and set up binary mode for proper buffer handling
-  process.stdin.resume();
-  // Important: Do NOT set encoding as it causes buffer conversion issues
-  // process.stdin.setEncoding('utf8'); - This line causes issues!
-  
-  // Handle process termination gracefully
-  process.on('SIGINT', async () => {
-    await app.close();
-    process.exit(0);
-  });
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors();
+
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }));
+
+  app.setGlobalPrefix('api');
+
+  // Set up Swagger
+  const config = new DocumentBuilder()
+    .setTitle('simBro')
+    .setDescription('RESTful API for technician scheduling, job tracking, and asset management')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const isMcpMode = process.argv.includes('--mcp') || !process.stdin.isTTY;
+
+  if (isMcpMode) {
+    await app.init();
+    
+    process.stdin.resume();
+    
+    process.on('SIGINT', async () => {
+      await app.close();
+      process.exit(0);
+    });
+  } else {
+    const port = process.env.PORT || 3000;
+    await app.listen(port);
+    console.log(`🚀 REST API server running on http://localhost:${port}/api`);
+    console.log(`📚 API Documentation available at http://localhost:${port}/api/docs`);
+  }
 }
 
 bootstrap().catch(err => {

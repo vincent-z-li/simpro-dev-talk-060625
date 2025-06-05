@@ -1,6 +1,8 @@
-# simBro MCP Server 
+# simBro Server (MCP+RESTful) 
 
-A Model Context Protocol (MCP) server built with Nest, PostgreSQL, and Prisma for technician scheduling, job tracking, and asset management.
+A dual-mode application built with NestJS, PostgreSQL, and Prisma for technician scheduling, job tracking, and asset management. It can run as either or at same time:
+- **MCP Server**: Model Context Protocol server for AI agent integration (stdio)
+- **RESTful API Server**: Traditional REST API with Swagger documentation
 
 *Disclaimer: This is only a demo project for tech talk on showcase the MCP & function calling, not suitable for commercial use.*
 
@@ -9,14 +11,28 @@ A Model Context Protocol (MCP) server built with Nest, PostgreSQL, and Prisma fo
 - Node.js (v18 or higher)
 - PostgreSQL database
 
-## Installation
+## Installation & Setup
 1. `brew services start postgresql@15`
 2. Run `setup.sh`. before that, give it access`chmod +x ./setup.sh`, fix any error that occurs
-3. `npm run mcp:start`
-4. Connect this MCP with your local agent, similar to this [Guide](https://www.notion.so/Update-Jira-Confluence-with-Copilot-agent-mode-by-connecting-their-MCP-2026aa72858e805391accb123ff90009?source=copy_link)
-4. MCP inspector is on port: `http://127.0.0.1:6274`
-5. Ask agents to do some the sample workflows defined below
 
+## Running the Application
+
+### MCP Server 
+```bash
+npm run mcp:inspect
+```
+- MCP inspector available at: `http://127.0.0.1:6274`
+- Click "Connect", and can test all the tool works as expected without connecting to local agent.
+- To connect this MCP with your local agent, similar to this [Guide](https://www.notion.so/Update-Jira-Confluence-with-Copilot-agent-mode-by-connecting-their-MCP-2026aa72858e805391accb123ff90009?source=copy_link)
+
+### RESTful API Server 
+For traditional REST API usage:
+```bash
+npm run start:api        # Production mode
+npm run start:api:dev    # Development mode with hot reload
+```
+- API available at: `http://localhost:3000`
+- Swagger documentation at: `http://localhost:3000/api`
 
 ## Available MCP Tools
 
@@ -40,41 +56,30 @@ A Model Context Protocol (MCP) server built with Nest, PostgreSQL, and Prisma fo
 - `end_time_tracking` - End time tracking
 - `get_time_entries` - Get time entries for technician or job
 
+## RESTful API Endpoints
 
-## Sample Work flows
-### 1 Morning Dispatch Workflow
-1. Show me all available technicians and their skills
-2. What's John Smith's schedule for today?
-3. Get the details for the AC repair job - what's the priority and customer info?
-4. John is heading to the job site now - update his location to 789 Business Ave, New York
-5. Start the work timer for John on the AC repair job
+When running in API mode, the following REST endpoints are available:
 
-### 2 Technician is on-site and working
-1. Update job job001 status to in_progress
-2. Add work notes: 'Diagnosed refrigerant leak in evaporator coil. Capacitor also failing. Ordering replacement parts.'
-3. Show me available assets of type 'equipment'
-4. Assign the refrigerant recovery unit to job job001
-5. Add more work notes: 'Parts arrived. Replacing capacitor and sealing leak. System testing in progress.'
-6. Update job status to completed
+### Technicians
+- `GET /technicians` - Get all technicians
+- `GET /technicians/:id/schedule` - Get technician schedule
 
-### 3 Emergency Response
-1. Show me all available technicians
-2. Which technicians have electrical skills?
-3. What's Sarah's current location and status?
-4. Get available electrical tools and equipment
-5. Start a work timer for an emergency electrical job
+### Jobs
+- `POST /jobs` - Create a new job
+- `GET /jobs` - Get all jobs (with optional filters)
+- `PATCH /jobs/:id/status` - Update job status
+- `POST /jobs/:id/notes` - Add work notes to a job
 
-### 4 Asset Management
-1. Show me all assets assigned to tech001
-2. What tools are currently available in the warehouse?
-3. Get all assets of type 'part' - what inventory do we have?
-4. Assign asset001 to job002 for the electrical inspection
-5. Show me which assets are being used on active jobs
+### Assets
+- `GET /assets` - Get available assets
+- `POST /assets/:id/assign` - Assign asset to technician
+- `POST /assets/usage` - Record asset usage
 
-### 5 End-of-Day Reporting
-1. Show me all jobs with status 'completed' today
-2. What work notes were added to the AC repair job?
-3. Get the time entries for tech001 - how long did jobs take?
-4. Update all technician statuses to 'offline' for end of day
-5. Show me tomorrow's scheduled jobs
+### Time Entries
+- `POST /time-entries/start` - Start time tracking
+- `POST /time-entries/:id/end` - End time tracking
+- `GET /time-entries` - Get time entries
+
+Visit `/api` endpoint for complete Swagger documentation when running the API server.
+
 

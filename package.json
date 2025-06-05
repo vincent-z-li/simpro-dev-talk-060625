@@ -1,7 +1,7 @@
 {
-  "name": "simbro-mcp-server-nest",
-  "version": "1.0.0",
-  "description": "MCP Server for simbro with NestJS, PostgreSQL and Prisma - Technician scheduling, job tracking, and asset management",
+  "name": "simbro-server",
+  "version": "2.0.0",
+  "description": "MCP & RESTful API Server for simBro with NestJS, PostgreSQL and Prisma - Technician scheduling, job tracking, and asset management",
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
@@ -10,6 +10,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "start:mcp": "node dist/main --mcp",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -20,7 +21,7 @@
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "mcp:start": "npx @modelcontextprotocol/inspector node dist/main.js",
+    "mcp:inspect": "npx @modelcontextprotocol/inspector npm run start:mcp",
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
@@ -29,9 +30,13 @@
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.4.18",
+    "@nestjs/swagger": "^7.4.2",
     "@prisma/client": "^5.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

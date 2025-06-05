@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './common/prisma.service';
-import { TechnicianService } from './technician/technician.service';
-import { JobService } from './job/job.service';
-import { AssetService } from './asset/asset.service';
-import { TimeEntryService } from './time-entry/time-entry.service';
+import { TechnicianModule } from './technician/technician.module';
+import { JobModule } from './job/job.module';
+import { AssetModule } from './asset/asset.module';
+import { TimeEntryModule } from './time-entry/time-entry.module';
 import { McpService } from './mcp/mcp.service';
 import { McpHandlerService } from './mcp/mcp-handler.service';
 
@@ -13,13 +13,13 @@ import { McpHandlerService } from './mcp/mcp-handler.service';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    TechnicianModule,
+    JobModule,
+    AssetModule,
+    TimeEntryModule,
   ],
   providers: [
     PrismaService,
-    TechnicianService,
-    JobService,
-    AssetService,
-    TimeEntryService,
     McpHandlerService,
     McpService,
   ],
