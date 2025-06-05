@@ -29,7 +29,6 @@ export class JobController {
     @Query('technicianId') technicianId?: string,
     @Query('status') status?: JobStatus,
   ) {
-    // For now, return all jobs. In the future, you could implement filtering here
     return this.jobService.findAll();
   }
 
